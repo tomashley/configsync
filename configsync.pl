@@ -28,7 +28,34 @@ my $rsyncmodule = "hephaestus";
 my $hostname = hostname;
 my $dest = "/tmp";
 
+# count in the number of arguments passed in
+my $numargs = $#ARGV + 1;
+print "Number of arguments passed in is: ", $numargs, "\n";
 
+# build a list of jobs to do from the command line args passed.
+# we need to check them all before running anything in case crap is passed in!
+my @actions = (); # declare empty array of action
+foreach my $argnum (0 .. $#ARGV) {
+  print $ARGV[$argnum], "\n";
+  if ( $ARGV[$argnum] eq "sync" ) {
+#      print "We will rsync the files for $hostname\n";
+      push(@actions, "sync")
+  } elsif ( $ARGV[$argnum] eq "test" ) {
+#      print "show any diffs\n";
+      push(@actions, "diff")
+  } elsif ( $ARGV[$argnum] eq "deploy" ) {
+#      print "deploy the waiting files via a complex inplace link change et al or\nwith something nice like puppet\n";
+      push(@actions, "deploy")
+  } elsif ( $ARGV[$argnum] eq "disable" ) {
+#      print "we will diable any syncing for the time being and send an email to root each time\nthat will make someone enable it\n";
+      push(@actions, "disable")
+  } else {
+#      print "dodgy command line argument - crap out and print usage\n";
+      push(@actions, "usage")
+  }
+}
+
+print @actions, "\n";
 
 # test stuff
 print "rsync host: ", $githost, "\nthis host: ". $hostname, "\n";
@@ -78,7 +105,7 @@ sub sync {
 
 sub show_diffs {
   # diff the files with their currently existing OS file
-  foreach (@foundfiles) {
+  foreach (my @foundfiles) {
     my $file = $_;
     $file =~ s/\/tmp\/templar\/root\//\//;
     print "\nfiles: ", $_, "\t", $file, "\n";
