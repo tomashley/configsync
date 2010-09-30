@@ -66,20 +66,3 @@ sub sync {
 #  # and output the array of files
 #  print join("\n",@foundfiles), "\n";
 } # end sub sync
-
-sub show_diffs {
-  # diff the files with their currently existing OS file
-  foreach (my @foundfiles) {
-    my $file = $_;
-    $file =~ s/\/tmp\/templar\/root\//\//;
-    print "\nfiles: ", $_, "\t", $file, "\n";
-
-    # using native diff to print the results
-    # my $command = 'diff -Nl ' . $file . ' ' . $_;
-    # system($command)
-
-    # using Text::Diff perl module supplies a patch style diff listing
-    my $diff = diff $file, $_;
-    print $diff;
-  }
-} # end sub
