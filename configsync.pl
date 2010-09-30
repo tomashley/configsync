@@ -27,7 +27,7 @@ use File::Find;
 my $githost = 'localhost';    # central git repo of generated config files
 my $rsyncmodule = "hephaestus";
 my $hostname = hostname;
-my $dest = "/tmp";
+my $dest = "/var/cache/configsync";
 
 # count in the number of arguments passed in
 
@@ -43,8 +43,7 @@ print "-d $opts{d}\n" if defined $opts{d};
 print "-m $opts{m}\n" if defined $opts{m};
 
 # test stuff
-print "rsync host: ", $githost, "\nthis host: ". $hostname, "\n";
-
+# print "rsync host: ", $githost, "\nthis host: ". $hostname, "\n";
 
 
 # --------------------------------------------------------------------------------
@@ -52,40 +51,20 @@ print "rsync host: ", $githost, "\nthis host: ". $hostname, "\n";
 # --------------------------------------------------------------------------------
 
 sub sync {
-  # Using File::RsyncP doesn't seem to work
-  # # create a new rsyncp object with rsync options
-  # my $sync = File::RsyncP->new({
-  #                         logLevel  => 1,
-  #                         rsyncCmd  => "/usr/bin/rsync",
-  #                         rsyncArgs => [
-  #                                # "--archive",
-  #                                 "-logDtpre.iLsf",
-  #                                 "-vv"
-  #                                 ],
-  #     });
-  #
-  # # connect to remote host
-  # $sync->serverConnect($githost);
-  # # connect to
-  # $sync->serverService($rsyncmodule);
-  # $sync->serverStart(1,"hephaestus/templar");
-  # $sync->go($dest);
-  # $sync->serverClose;
-
   # use native rsync command as we are doing nothing too complicated.
   # Can then use a direct call to rsync command
 
   my $command = 'rsync -av '.  $githost .'::' . $rsyncmodule . '/' . $hostname . ' ' . $dest;
   print $command, "\n";
   # run the command
-  system($command);
+  system($command) == 0 or die "Rsync Failed! $?";
 
-  # iterate over the files that have rsynced and diff them with the original already on this host
-  my @foundfiles; # declare global scope array of found files
-  # traverse the tree we just rsynced and push files to an array
-  find( sub { push @foundfiles, $File::Find::name if -f },  $dest.'/'.$hostname.'/root/' );
-  # and output the array of files
-  print join("\n",@foundfiles), "\n";
+#  # iterate over the files that have rsynced and diff them with the original already on this host
+#  my @foundfiles; # declare global scope array of found files
+#  # traverse the tree we just rsynced and push files to an array
+#  find( sub { push @foundfiles, $File::Find::name if -f },  $dest.'/'.$hostname.'/root/' );
+#  # and output the array of files
+#  print join("\n",@foundfiles), "\n";
 } # end sub sync
 
 sub show_diffs {
