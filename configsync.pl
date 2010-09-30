@@ -17,6 +17,7 @@ use warnings;
 
 # module loading
 use Sys::Hostname;
+use Getopt::Std;
 use File::RsyncP;
 use Text::Diff;
 use File::Find;
@@ -29,33 +30,17 @@ my $hostname = hostname;
 my $dest = "/tmp";
 
 # count in the number of arguments passed in
-my $numargs = $#ARGV + 1;
-print "Number of arguments passed in is: ", $numargs, "\n";
 
-# build a list of jobs to do from the command line args passed.
-# we need to check them all before running anything in case crap is passed in!
-my @actions = (); # declare empty array of action
-foreach my $argnum (0 .. $#ARGV) {
-  print $ARGV[$argnum], "\n";
-  if ( $ARGV[$argnum] eq "sync" ) {
-#      print "We will rsync the files for $hostname\n";
-      push(@actions, "sync")
-  } elsif ( $ARGV[$argnum] eq "test" ) {
-#      print "show any diffs\n";
-      push(@actions, "diff")
-  } elsif ( $ARGV[$argnum] eq "deploy" ) {
-#      print "deploy the waiting files via a complex inplace link change et al or\nwith something nice like puppet\n";
-      push(@actions, "deploy")
-  } elsif ( $ARGV[$argnum] eq "disable" ) {
-#      print "we will diable any syncing for the time being and send an email to root each time\nthat will make someone enable it\n";
-      push(@actions, "disable")
-  } else {
-#      print "dodgy command line argument - crap out and print usage\n";
-      push(@actions, "usage")
-  }
-}
+my %opts=(); # declare option hash
+getopts('stdDm:', \%opts); #  or die "Incorrect options!"; # -s sync, -t test, -d deploy, -m disable+comment
 
-print @actions, "\n";
+# option -D disables syncing and puppet deployment
+print "-D $opts{D}\nWe will disable - nothing more to process\n" and exit(0) if defined $opts{D};
+
+print "-s $opts{s}\n" and &sync if defined $opts{s};
+print "-t $opts{t}\n Run puppet in test mode\n" if defined $opts{t};
+print "-d $opts{d}\n" if defined $opts{d};
+print "-m $opts{m}\n" if defined $opts{m};
 
 # test stuff
 print "rsync host: ", $githost, "\nthis host: ". $hostname, "\n";
