@@ -59,10 +59,4 @@ sub sync {
   # run the command
   system($command) == 0 or die "Rsync Failed! $?";
 
-#  # iterate over the files that have rsynced and diff them with the original already on this host
-#  my @foundfiles; # declare global scope array of found files
-#  # traverse the tree we just rsynced and push files to an array
-#  find( sub { push @foundfiles, $File::Find::name if -f },  $dest.'/'.$hostname.'/root/' );
-#  # and output the array of files
-#  print join("\n",@foundfiles), "\n";
 } # end sub sync
