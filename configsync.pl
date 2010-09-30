@@ -8,7 +8,7 @@
 #
 # there are four command line options
 # 1. sync - sync the data to the staging area on the server
-# 2. test - allow diffs to be printed to stout of incoming files
+# 2. test - allow diffs to be printed to stdout of incoming files
 # 3. deploy - run the puppet? daemon to deploy the changes
 # 4. disable - turn off configsync - for feature/local tests etc
 
