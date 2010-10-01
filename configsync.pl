@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# this is a perl scrip that will transfer the config files from a central master
+# this is a perl script that will transfer the config files from a central master
 # git server.
 # script will pull files from the folder appropriate to the server's hostname
 # files will be pulled to a staging location that will be the puppet staging
@@ -38,8 +38,8 @@ getopts('stdDm:', \%opts); #  or die "Incorrect options!"; # -s sync, -t test, -
 print "-D $opts{D}\nWe will disable - nothing more to process\n" and exit(0) if defined $opts{D};
 
 print "-s $opts{s}\n" and &sync if defined $opts{s};
-print "-t $opts{t}\n Run puppet in test mode\n" if defined $opts{t};
-print "-d $opts{d}\n" if defined $opts{d};
+print "-t $opts{t}\nRun puppet in test mode\n" and &run_puppet("test") if defined $opts{t};
+print "-d $opts{d}\nRun pupper for real\n" and &run_puppet("deploy") if defined $opts{d};
 print "-m $opts{m}\n" if defined $opts{m};
 
 # test stuff
@@ -60,3 +60,38 @@ sub sync {
   system($command) == 0 or die "Rsync Failed! $?";
 
 } # end sub sync
+
+# --------------------------------------------------------------------------------
+
+sub run_puppet {
+  # here we will wrapper puppet
+  # how are we running puppet?
+  # accepts one argument that is the way we contruc the puppet command
+  my $action = shift or die "incorrectly called the sub";
+
+  # set up some vars, maybe we should push these to the top of the script?
+  my $executable = '/usr/bin/puppet';
+  my $logfile = '/var/log/puppet/local.log';
+  my $manifest_file = 'root/etc/puppet/site.pp';
+  my $manifest_loco = $dest.'/'.$hostname.'/'.$manifest_file;
+
+  # start to construct the system command to run
+  my $command = $executable;
+
+  if ($action eq "test") {
+  # if testing, run puppet with the no operation switch
+    $command .= " --noop"
+  } elsif ($action eq "deploy") {
+  # if puppetting for real, write what we are doing to a system rotated log file
+    $command .= ' -l ' . $logfile
+  } else {
+  die "incorrectly calling puppet executable!";
+  }
+
+  # add the manifest file to the puppet command line
+  $command .= ' ' . $manifest_loco;
+  print "$command\n";
+
+  system($command) == 0 or die "Puppet Failed! $?";
+
+} # end sub run_puppet
