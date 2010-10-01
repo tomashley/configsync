@@ -18,9 +18,9 @@ use warnings;
 # module loading
 use Sys::Hostname;
 use Getopt::Std;
-use File::RsyncP;
-use Text::Diff;
-use File::Find;
+# use File::RsyncP;
+# use Text::Diff;
+# use File::Find;
 
 # set up some variables
 # my $githost = 'read-ldap-01-pv.snaponglobal.com';    # central git repo of generated config files
