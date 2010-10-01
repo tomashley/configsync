@@ -28,8 +28,14 @@ my $githost = 'localhost';    # central git repo of generated config files
 my $rsyncmodule = "hephaestus";
 my $hostname = hostname;
 my $dest = "/var/cache/configsync";
+my $disable_file = "/var/cache/configsync/disable.log";
 
 # count in the number of arguments passed in
+# my $numargs = $#ARGV + 1;
+# print "Number of arguments passed in is: ", $numargs, "\n";
+
+# check for the presence of a disable file
+&check_disable;
 
 my %opts=(); # declare option hash
 getopts('stdDm:', \%opts); #  or die "Incorrect options!"; # -s sync, -t test, -d deploy, -m disable+comment
@@ -95,3 +101,27 @@ sub run_puppet {
   system($command) == 0 or die "Puppet Failed! $?";
 
 } # end sub run_puppet
+
+# --------------------------------------------------------------------------------
+
+sub check_disable {
+  if (-e $disable_file) {
+    print "syncing is disabled\n";
+    print "remove $disable_file to continue\n\n";
+    # open the file and read the reason for being disabled
+    open(DISABLE, $disable_file);
+    my @lines = <DISABLE>;
+    # ideally this should be a one line file with the format:
+    # we will take the last line of this file as we could keep it lying around to see when things were disabled and re-enabled
+    # date \t who \t message
+ #   print "$lines[$#lines]\n"; # the last element(last line) of the array
+    my $line = $lines[$#lines]; # place this line in a variable so it is easier to work with!
+    # read the line into an array
+    my @disable = split(/\|/,$line);
+    print "time: $disable[0]\n";
+    print "who: $disable[1]\n";
+    print "message: $disable[2]\n";
+
+    exit; # get out whilst disabled
+  }
+} # end sub check_disabled
