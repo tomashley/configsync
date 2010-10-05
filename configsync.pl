@@ -34,19 +34,22 @@ my $disable_file = "/var/cache/configsync/disable.log";
 # my $numargs = $#ARGV + 1;
 # print "Number of arguments passed in is: ", $numargs, "\n";
 
+my %opts=(); # declare option hash
+getopts('stdDm:', \%opts) or &usage; # -s sync, -t test, -d deploy, -m disable+comment
+
 # check for the presence of a disable file
 &check_disable;
 
-my %opts=(); # declare option hash
-getopts('stdDm:', \%opts); #  or die "Incorrect options!"; # -s sync, -t test, -d deploy, -m disable+comment
-
+if (defined $opts{m}) {
+  print "-m $opts{m}\n"
+} else {
+  $opts{m} = "default disable message";
+  }
 # option -D disables syncing and puppet deployment
-print "-D $opts{D}\nWe will disable - nothing more to process\n" and exit(0) if defined $opts{D};
-
+print "-D $opts{D}\nWe will disable - nothing more to process\n" and &disable($opts{m}) if defined $opts{D};
 print "-s $opts{s}\n" and &sync if defined $opts{s};
 print "-t $opts{t}\nRun puppet in test mode\n" and &run_puppet("test") if defined $opts{t};
 print "-d $opts{d}\nRun pupper for real\n" and &run_puppet("deploy") if defined $opts{d};
-print "-m $opts{m}\n" if defined $opts{m};
 
 # test stuff
 # print "rsync host: ", $githost, "\nthis host: ". $hostname, "\n";
@@ -125,3 +128,29 @@ sub check_disable {
     exit; # get out whilst disabled
   }
 } # end sub check_disabled
+
+# --------------------------------------------------------------------------------
+
+sub disable {
+  # get the message passed as an argument
+  my $message = shift;
+  print "$message\n";
+
+  # write to the log file and exit
+  open(DISABLE, ">", $disable_file) or die "Failed to open file: $!";
+
+  my $user = scalar(getpwuid $<);
+  # this will most likely be root as script will need to run as root
+  # need to find out how we get the sudo user, or the sshing host for a better idea of who
+  # is running the script!
+  print "$user\n";
+
+  # get the date and time
+  my $now = localtime;
+  print "time: $now\n";
+
+  # print this info to the file
+  print DISABLE $now.'|'.$user.'|'.$message."\n";
+
+  exit; # get out once we write our disable file
+} # end sub disable
