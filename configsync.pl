@@ -35,7 +35,9 @@ my $disable_file = "/var/cache/configsync/disable.log";
 # print "Number of arguments passed in is: ", $numargs, "\n";
 
 my %opts=(); # declare option hash
-getopts('stdDm:', \%opts) or &usage; # -s sync, -t test, -d deploy, -m disable+comment
+getopts('hstdDm:', \%opts) or &usage; # -s sync, -t test, -d deploy, -m disable+comment
+
+&usage if defined $opts{h};
 
 # check for the presence of a disable file
 &check_disable;
@@ -57,6 +59,52 @@ print "-d $opts{d}\nRun pupper for real\n" and &run_puppet("deploy") if defined 
 
 # --------------------------------------------------------------------------------
 #  Declare subroutines
+# --------------------------------------------------------------------------------
+
+sub usage {
+
+  print <<END_of_Usage;
+
+    NAME
+        configsync - wrapper script to rsync and puppet
+
+    SYNOPSIS
+        ./configsync.pl [-Dstdm]
+
+    DESCRIPTION
+    Wrapper script to rsync and puppet for the deployment of
+    configuration files on a server. By default the script does
+    nothing and exits.
+
+    -D
+      disable configsync. This will prevent configsync from
+      running until the disable file is manually removed. This
+      marries with argument -m for a disable message.
+
+    -d
+      run puppet in production mode. This will cause puppet to
+      deploy its configuration from site.pp.
+
+    -h
+      provides this help text and exits.
+
+    -m
+      disable message to be placed inside disable file
+
+    -s
+      run rsync and pulls in the latest configuration files
+      for this server.
+
+    -t
+      run puppet in test mode. Puppet will run with the '--noop'
+      switch.
+
+    AUTHOR
+        Tom Ashley <tom.ashley\@snapon.com>
+
+END_of_Usage
+} # end sub usage
+
 # --------------------------------------------------------------------------------
 
 sub sync {
