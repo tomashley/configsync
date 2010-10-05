@@ -35,7 +35,7 @@ my $disable_file = "/var/cache/configsync/disable.log";
 # print "Number of arguments passed in is: ", $numargs, "\n";
 
 my %opts=(); # declare option hash
-getopts('hstdDm:', \%opts) or &usage; # -s sync, -t test, -d deploy, -m disable+comment
+getopts('hstdDm:', \%opts) or &usage and exit; # -s sync, -t test, -d deploy, -m disable+comment
 
 &usage if defined $opts{h};
 
