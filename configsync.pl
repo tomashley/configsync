@@ -48,10 +48,14 @@ if (defined $opts{m}) {
   $opts{m} = "default disable message";
   }
 # option -D disables syncing and puppet deployment
-print "-D $opts{D}\nWe will disable - nothing more to process\n" and &disable($opts{m}) if defined $opts{D};
-print "-s $opts{s}\n" and &sync if defined $opts{s};
-print "-t $opts{t}\nRun puppet in test mode\n" and &run_puppet("test") if defined $opts{t};
-print "-d $opts{d}\nRun pupper for real\n" and &run_puppet("deploy") if defined $opts{d};
+# print "-D $opts{D}\nWe will disable - nothing more to process\n" and &disable($opts{m}) if defined $opts{D};
+&disable($opts{m}) if defined $opts{D};
+# print "-s $opts{s}\n" and &sync if defined $opts{s};
+&sync if defined $opts{s};
+# print "-t $opts{t}\nRun puppet in test mode\n" and &run_puppet("test") if defined $opts{t};
+&run_puppet("test") if defined $opts{t};
+# print "-d $opts{d}\nRun pupper for real\n" and &run_puppet("deploy") if defined $opts{d};
+&run_puppet("deploy") if defined $opts{d};
 
 # test stuff
 # print "rsync host: ", $githost, "\nthis host: ". $hostname, "\n";
