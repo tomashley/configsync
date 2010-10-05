@@ -18,9 +18,6 @@ use warnings;
 # module loading
 use Sys::Hostname;
 use Getopt::Std;
-# use File::RsyncP;
-# use Text::Diff;
-# use File::Find;
 
 # set up some variables
 # my $githost = 'read-ldap-01-pv.snaponglobal.com';    # central git repo of generated config files
@@ -29,10 +26,6 @@ my $rsyncmodule = "hephaestus";
 my $hostname = hostname;
 my $dest = "/var/cache/configsync";
 my $disable_file = "/var/cache/configsync/disable.log";
-
-# count in the number of arguments passed in
-# my $numargs = $#ARGV + 1;
-# print "Number of arguments passed in is: ", $numargs, "\n";
 
 my %opts=(); # declare option hash
 getopts('hstdDm:', \%opts) or &usage and exit; # -s sync, -t test, -d deploy, -m disable+comment
@@ -46,20 +39,23 @@ if (defined $opts{m}) {
   print "-m $opts{m}\n"
 } else {
   $opts{m} = "default disable message";
-  }
+}
+
 # option -D disables syncing and puppet deployment
 # print "-D $opts{D}\nWe will disable - nothing more to process\n" and &disable($opts{m}) if defined $opts{D};
 &disable($opts{m}) if defined $opts{D};
+
+# option -s will sync latest copy of config files
 # print "-s $opts{s}\n" and &sync if defined $opts{s};
 &sync if defined $opts{s};
+
+# option -t will run puppet with --noop switch
 # print "-t $opts{t}\nRun puppet in test mode\n" and &run_puppet("test") if defined $opts{t};
 &run_puppet("test") if defined $opts{t};
+
+# option -d will run puppet live
 # print "-d $opts{d}\nRun pupper for real\n" and &run_puppet("deploy") if defined $opts{d};
 &run_puppet("deploy") if defined $opts{d};
-
-# test stuff
-# print "rsync host: ", $githost, "\nthis host: ". $hostname, "\n";
-
 
 # --------------------------------------------------------------------------------
 #  Declare subroutines
@@ -68,10 +64,7 @@ if (defined $opts{m}) {
 sub usage {
 
   print <<END_of_Usage;
-<<<<<<< HEAD
 
-=======
->>>>>>> 89dd97b27d9fe589d93dfabad6a823c2e05d8cb7
     NAME
         configsync - wrapper script to rsync and puppet
 
@@ -130,8 +123,8 @@ sub sync {
 sub run_puppet {
   # here we will wrapper puppet
   # how are we running puppet?
-  # accepts one argument that is the way we contruc the puppet command
-  my $action = shift or die "incorrectly called the sub";
+  # accepts one argument that is the way we contruct the puppet command
+  my $action = shift or die "incorrectly called the run_puppet sub";
 
   # set up some vars, maybe we should push these to the top of the script?
   my $executable = '/usr/bin/puppet';
@@ -164,7 +157,7 @@ sub run_puppet {
 
 sub check_disable {
   if (-e $disable_file) {
-    print "syncing is disabled\n";
+    print "configsync is disabled\n";
     print "remove $disable_file to continue\n\n";
     # open the file and read the reason for being disabled
     open(DISABLE, $disable_file);
@@ -172,13 +165,13 @@ sub check_disable {
     # ideally this should be a one line file with the format:
     # we will take the last line of this file as we could keep it lying around to see when things were disabled and re-enabled
     # date \t who \t message
- #   print "$lines[$#lines]\n"; # the last element(last line) of the array
+    # print "$lines[$#lines]\n"; # the last element(last line) of the array
     my $line = $lines[$#lines]; # place this line in a variable so it is easier to work with!
     # read the line into an array
     my @disable = split(/\|/,$line);
-    print "time: $disable[0]\n";
-    print "who: $disable[1]\n";
-    print "message: $disable[2]\n";
+    print "Date and Time: $disable[0]\n";
+    print "Who: $disable[1]\n";
+    print "Message: $disable[2]\n\n";
 
     exit; # get out whilst disabled
   }
@@ -205,7 +198,7 @@ sub disable {
   print "time: $now\n";
 
   # print this info to the file
-  print DISABLE $now.'|'.$user.'|'.$message."\n";
+  print DISABLE $now . '|' . $user . '|' . $message . "\n";
 
   exit; # get out once we write our disable file
 } # end sub disable
