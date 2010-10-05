@@ -68,7 +68,10 @@ if (defined $opts{m}) {
 sub usage {
 
   print <<END_of_Usage;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 89dd97b27d9fe589d93dfabad6a823c2e05d8cb7
     NAME
         configsync - wrapper script to rsync and puppet
 
