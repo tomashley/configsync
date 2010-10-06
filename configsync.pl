@@ -21,7 +21,7 @@ use Getopt::Std;
 
 # set up some variables
 # my $githost = 'read-ldap-01-pv.snaponglobal.com';    # central git repo of generated config files
-my $githost = 'localhost';    # central git repo of generated config files
+my $githost = 'templar';    # central git repo of generated config files
 my $rsyncmodule = "hephaestus";
 my $hostname = hostname;
 my $dest = "/var/cache/configsync";
