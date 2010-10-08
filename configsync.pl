@@ -28,7 +28,10 @@ my $dest = "/var/cache/configsync";
 my $disable_file = "/var/cache/configsync/disable.log";
 
 my %opts=(); # declare option hash
-getopts('hstdDm:', \%opts) or &usage and exit; # -s sync, -t test, -d deploy, -m disable+comment
+getopts('hstdDm:', \%opts) or &usage_short and exit; # -s sync, -t test, -d deploy, -m disable+comment
+
+# short usage statement if no commmand args
+&usage_short if (!keys %opts);
 
 &usage if defined $opts{h};
 
