@@ -132,7 +132,7 @@ sub sync {
   my $command = 'rsync -av '.  $githost .'::' . $rsyncmodule . '/' . $hostname . ' ' . $dest;
   print $command, "\n";
   # run the command
-  system($command) == 0 or die "Rsync Failed! $!";
+  system($command) == 0 or &mail("Rsync Failed! $!");
 
 } # end sub sync
 
@@ -167,7 +167,11 @@ sub run_puppet {
   $command .= ' ' . $manifest_loco;
   print "$command\n";
 
-  system($command) == 0 or die "Puppet Failed! $!";
+  if ($action eq "test") {
+    system($command) == 0 or die("Puppet $action Failed! $!");
+  } else {
+    system($command) == 0 or &mail("Puppet $action Failed! $!");
+  }
 
 } # end sub run_puppet
 
