@@ -61,6 +61,16 @@ if (defined $opts{m}) {
 #  Declare subroutines
 # --------------------------------------------------------------------------------
 
+sub usage_short {
+  print <<END_of_Usage_short;
+  usage: configsync [-Ddhst] [-m 'message']
+
+END_of_Usage_short
+
+} # end sud usage_short
+
+# --------------------------------------------------------------------------------
+
 sub usage {
 
   print <<END_of_Usage;
