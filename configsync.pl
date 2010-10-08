@@ -195,6 +195,9 @@ sub check_disable {
     print "Who: $disable[1]\n";
     print "Message: $disable[2]\n\n";
 
+    # send mail to say this is disabled
+    &mail('disabled');
+
     exit; # get out whilst disabled
   }
 } # end sub check_disabled
