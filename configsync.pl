@@ -18,6 +18,7 @@ use warnings;
 # module loading
 use Sys::Hostname;
 use Getopt::Std;
+use Mail::Sendmail;
 
 # set up some variables
 # my $githost = 'read-ldap-01-pv.snaponglobal.com';    # central git repo of generated config files
@@ -26,6 +27,7 @@ my $rsyncmodule = "hephaestus";
 my $hostname = hostname;
 my $dest = "/var/cache/configsync";
 my $disable_file = "/var/cache/configsync/disable.log";
+my $mail_recepient = 'tom.ashley@snapon.com';
 
 my %opts=(); # declare option hash
 getopts('hstdDm:', \%opts) or &usage_short and exit; # -s sync, -t test, -d deploy, -m disable+comment
@@ -215,3 +217,21 @@ sub disable {
 
   exit; # get out once we write our disable file
 } # end sub disable
+
+# --------------------------------------------------------------------------------
+
+sub mail {
+
+my $status = shift;
+
+my %mail = (To      => $mail_recepient,
+            From    => 'configsync@' . $hostname,
+            Subject => 'configsync - ' . $status,
+            Message => "config sync - $status\n\nServer: $hostname"
+           );
+
+  sendmail(%mail) or die $Mail::Sendmail::error;
+
+#  print "OK. Log says:\n", $Mail::Sendmail::log;
+
+} # end sub mail
