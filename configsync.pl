@@ -62,6 +62,9 @@ if (defined $opts{m}) {
 # print "-d $opts{d}\nRun pupper for real\n" and &run_puppet("deploy") if defined $opts{d};
 &run_puppet("deploy") if defined $opts{d};
 
+# exit gracefully
+exit;
+
 # --------------------------------------------------------------------------------
 #  Declare subroutines
 # --------------------------------------------------------------------------------
