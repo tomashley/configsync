@@ -35,7 +35,7 @@ getopts('hstdDm:', \%opts) or &usage_short and exit; # -s sync, -t test, -d depl
 # short usage statement if no commmand args
 &usage_short if (!keys %opts);
 
-&usage if defined $opts{h};
+&usage and exit if defined $opts{h};
 
 # check for the presence of a disable file
 &check_disable;
