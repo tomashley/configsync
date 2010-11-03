@@ -21,13 +21,12 @@ use Getopt::Std;
 use Mail::Sendmail;
 
 # set up some variables
-# my $githost = 'read-ldap-01-pv.snaponglobal.com';    # central git repo of generated config files
 my $githost = 'read-ldap-01-pv';    # central git repo of generated config files
 my $rsyncmodule = "hephaestus";
 my $hostname = hostname;
 my $dest = "/var/cache/configsync";
 my $disable_file = "/var/cache/configsync/disable.log";
-my $mail_recepient = 'tom.ashley@snapon.com';
+my $mail_recepient = 'sbseu.ats@snapon.com';
 
 my %opts=(); # declare option hash
 getopts('hstdDm:', \%opts) or &usage_short and exit; # -s sync, -t test, -d deploy, -m disable+comment
