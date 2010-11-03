@@ -128,7 +128,7 @@ sub sync {
   # use native rsync command as we are doing nothing too complicated.
   # Can then use a direct call to rsync command
 
-  my $command = 'rsync -av --delete'.  $githost .'::' . $rsyncmodule . '/' . $hostname . ' ' . $dest;
+  my $command = 'rsync -av --delete '.  $githost .'::' . $rsyncmodule . '/' . $hostname . ' ' . $dest;
   print $command, "\n";
   # run the command
   system($command) == 0 or &mail("Rsync Failed! $!");
